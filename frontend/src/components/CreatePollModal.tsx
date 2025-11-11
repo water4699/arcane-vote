@@ -97,9 +97,9 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  e.target.setCustomValidity("");
+                  (e.target as HTMLInputElement).setCustomValidity("");
                 }}
-                onInvalid={(e) => e.target.setCustomValidity("Please fill out this field.")}
+                onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity("Please fill out this field.")}
                 required
               />
             </div>
@@ -113,9 +113,9 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 value={description}
                 onChange={(e) => {
                   setDescription(e.target.value);
-                  e.target.setCustomValidity("");
+                  (e.target as HTMLTextAreaElement).setCustomValidity("");
                 }}
-                onInvalid={(e) => e.target.setCustomValidity("Please fill out this field.")}
+                onInvalid={(e) => (e.target as HTMLTextAreaElement).setCustomValidity("Please fill out this field.")}
                 required
               />
             </div>
@@ -136,9 +136,9 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                       value={option}
                       onChange={(e) => {
                         updateOption(index, e.target.value);
-                        e.target.setCustomValidity("");
+                        (e.target as HTMLInputElement).setCustomValidity("");
                       }}
-                      onInvalid={(e) => e.target.setCustomValidity("Please fill out this field.")}
+                      onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity("Please fill out this field.")}
                       required
                     />
                     {options.length > 2 && (
@@ -167,15 +167,16 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 value={duration}
                 onChange={(e) => {
                   setDuration(e.target.value);
-                  e.target.setCustomValidity("");
+                  (e.target as HTMLInputElement).setCustomValidity("");
                 }}
                 onInvalid={(e) => {
-                  if (e.target.validity.valueMissing) {
-                    e.target.setCustomValidity("Please fill out this field.");
-                  } else if (e.target.validity.rangeUnderflow) {
-                    e.target.setCustomValidity("Value must be greater than or equal to 1.");
-                  } else if (e.target.validity.rangeOverflow) {
-                    e.target.setCustomValidity("Value must be less than or equal to 365.");
+                  const target = e.target as HTMLInputElement;
+                  if (target.validity.valueMissing) {
+                    target.setCustomValidity("Please fill out this field.");
+                  } else if (target.validity.rangeUnderflow) {
+                    target.setCustomValidity("Value must be greater than or equal to 1.");
+                  } else if (target.validity.rangeOverflow) {
+                    target.setCustomValidity("Value must be less than or equal to 365.");
                   }
                 }}
                 required

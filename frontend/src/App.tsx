@@ -26,12 +26,19 @@ function App() {
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: CONTRACT_ABI,
     functionName: "pollCount",
+    query: {
+      refetchInterval: false, // Disable auto-polling
+      refetchOnWindowFocus: false, // Disable refetch on window focus
+      refetchOnMount: true, // Only fetch on mount
+    },
   });
 
-  // Load polls
+  // Load polls with debounce
   useEffect(() => {
+    let isCancelled = false;
+
     const loadPolls = async () => {
-      if (!pollCount) return;
+      if (!pollCount || isCancelled) return;
 
       const loadedPolls: Poll[] = [];
       const count = Number(pollCount);
@@ -39,6 +46,7 @@ function App() {
       // Helper function to read contract data
       const readContract = async (functionName: string, args: any[]) => {
         try {
+          if (isCancelled) return null;
           if (!window.ethereum) {
             console.warn("MetaMask not found");
             return null;
@@ -53,13 +61,15 @@ function App() {
       };
 
       for (let i = 0; i < count; i++) {
+        if (isCancelled) break;
+        
         try {
           // Read poll info from contract
           const pollInfo = await readContract("getPollInfo", [i]);
           const pollOptions = await readContract("getPollOptions", [i]);
           const hasVotedResult = address ? await readContract("hasVoted", [i, address]) : false;
 
-          if (pollInfo && pollOptions) {
+          if (pollInfo && pollOptions && !isCancelled) {
             const poll: Poll = {
               id: i,
               title: pollInfo[0] || `Poll ${i + 1}`,
@@ -78,12 +88,24 @@ function App() {
         } catch (error) {
           console.error(`Error loading poll ${i}:`, error);
         }
+        
+        // Add small delay between requests to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-      setPolls(loadedPolls);
+      if (!isCancelled) {
+        setPolls(loadedPolls);
+      }
     };
 
-    loadPolls();
+    const timeoutId = setTimeout(() => {
+      loadPolls();
+    }, 300); // Debounce 300ms
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [pollCount, refreshKey, address]);
 
   const handleVote = (poll: Poll) => {

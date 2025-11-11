@@ -31,6 +31,7 @@ export function ResultsModal({ isOpen, poll, onClose }: ResultsModalProps) {
     functionName: "isDecrypted",
     args: poll ? [BigInt(poll.id)] : undefined,
     query: {
+      refetchInterval: false, // Disable auto-polling
       refetchOnMount: true,
       refetchOnWindowFocus: false,
     },

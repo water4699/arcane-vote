@@ -32,6 +32,11 @@ export function DecryptModal({ isOpen, poll, onClose }: DecryptModalProps) {
     abi: CONTRACT_ABI,
     functionName: "isAuthorizedDecryptor",
     args: address ? [address] : undefined,
+    query: {
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+    },
   });
 
   // Check if poll is already decrypted
@@ -41,6 +46,7 @@ export function DecryptModal({ isOpen, poll, onClose }: DecryptModalProps) {
     functionName: "isDecrypted",
     args: poll ? [BigInt(poll.id)] : undefined,
     query: {
+      refetchInterval: false, // Disable auto-polling
       refetchOnMount: true,
       refetchOnWindowFocus: false,
     },

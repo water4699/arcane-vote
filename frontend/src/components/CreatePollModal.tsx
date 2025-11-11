@@ -95,7 +95,11 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 id="title"
                 placeholder="e.g., Board Member Election 2024"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                onInvalid={(e) => e.target.setCustomValidity("Please fill out this field.")}
                 required
               />
             </div>
@@ -107,7 +111,11 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Provide details about this poll..."
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                onInvalid={(e) => e.target.setCustomValidity("Please fill out this field.")}
                 required
               />
             </div>
@@ -126,7 +134,11 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                     <Input
                       placeholder={`Option ${index + 1}`}
                       value={option}
-                      onChange={(e) => updateOption(index, e.target.value)}
+                      onChange={(e) => {
+                        updateOption(index, e.target.value);
+                        e.target.setCustomValidity("");
+                      }}
+                      onInvalid={(e) => e.target.setCustomValidity("Please fill out this field.")}
                       required
                     />
                     {options.length > 2 && (
@@ -153,7 +165,19 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 max="365"
                 placeholder="7"
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => {
+                  setDuration(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                onInvalid={(e) => {
+                  if (e.target.validity.valueMissing) {
+                    e.target.setCustomValidity("Please fill out this field.");
+                  } else if (e.target.validity.rangeUnderflow) {
+                    e.target.setCustomValidity("Value must be greater than or equal to 1.");
+                  } else if (e.target.validity.rangeOverflow) {
+                    e.target.setCustomValidity("Value must be less than or equal to 365.");
+                  }
+                }}
                 required
               />
               <p className="text-xs text-muted-foreground">Poll will remain active for this many days</p>

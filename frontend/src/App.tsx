@@ -221,13 +221,13 @@ function App() {
       <CreatePollModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={handleRefresh}
+        onSuccess={() => setIsCreateModalOpen(false)}
       />
       <VoteModal
         isOpen={isVoteModalOpen}
         poll={selectedPoll}
         onClose={() => setIsVoteModalOpen(false)}
-        onSuccess={handleRefresh}
+        onSuccess={() => setIsVoteModalOpen(false)}
       />
       <ResultsModal
         isOpen={isResultsModalOpen}
